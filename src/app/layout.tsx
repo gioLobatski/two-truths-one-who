@@ -11,6 +11,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Two Truths, One Who",
   description: "A local party game — guess whose truth it is.",
+  icons: {
+    icon: "/2-truths-1-who-logo.png",
+  },
 };
 
 export default function RootLayout({
