@@ -9,11 +9,11 @@ export function HomeScreen({
   onJoinGame,
   loading,
 }: {
-  onCreateGame: () => void;
+  onCreateGame: (playerName: string) => void;
   onJoinGame: (gameId: string, playerName: string) => void;
   loading: boolean;
 }) {
-  const [mode, setMode] = useState<"home" | "join">("home");
+  const [mode, setMode] = useState<"home" | "join" | "create">("home");
   const [gameCode, setGameCode] = useState("");
   const [playerName, setPlayerName] = useState("");
 
@@ -22,6 +22,12 @@ export function HomeScreen({
     const name = playerName.trim();
     if (!code || !name) return;
     onJoinGame(code, name);
+  }
+
+  function handleCreate() {
+    const name = playerName.trim();
+    if (!name) return;
+    onCreateGame(name);
   }
 
   if (mode === "join") {
@@ -78,6 +84,48 @@ export function HomeScreen({
     );
   }
 
+  if (mode === "create") {
+    return (
+      <Screen>
+        <div className="space-y-2">
+          <Title>Create a Game</Title>
+          <Subtitle>You&apos;ll host — enter your name to join</Subtitle>
+        </div>
+
+        <Card className="space-y-4">
+          <div className="space-y-1">
+            <label className="text-xs font-semibold uppercase tracking-wide text-violet-300/60">
+              Your Name
+            </label>
+            <input
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+              placeholder="What should we call you?"
+              maxLength={24}
+              className="w-full rounded-xl bg-black/30 px-4 py-3 text-white placeholder-violet-300/40 outline-none ring-1 ring-inset ring-white/10 focus:ring-violet-400"
+            />
+          </div>
+
+          <Button
+            className="w-full"
+            onClick={handleCreate}
+            disabled={!playerName.trim() || loading}
+          >
+            {loading ? "Creating..." : "Create Game"}
+          </Button>
+
+          <button
+            onClick={() => setMode("home")}
+            className="w-full text-center text-sm text-violet-300/60 hover:text-violet-300"
+          >
+            ← Back
+          </button>
+        </Card>
+      </Screen>
+    );
+  }
+
   return (
     <Screen>
       <Logo size={140} />
@@ -89,7 +137,7 @@ export function HomeScreen({
       </div>
 
       <Card className="space-y-4">
-        <Button className="w-full" onClick={onCreateGame} disabled={loading}>
+        <Button className="w-full" onClick={() => setMode("create")} disabled={loading}>
           {loading ? "Creating..." : "Create Game"}
         </Button>
 

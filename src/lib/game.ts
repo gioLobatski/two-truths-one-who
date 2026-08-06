@@ -9,6 +9,45 @@ export const POINTS_CORRECT_GUESS = 100;
 /** Points the author earns for each opponent they fooled (wrong guess). */
 export const POINTS_PER_FOOLED = 50;
 
+/**
+ * Diminishing author multiplier by appearance order: an author's first
+ * revealed truth pays ×0.5 of the base fooling reward, their second (and any
+ * later) appearance pays ×0.25. This compresses the surplus of players who
+ * draw bonus truths from the random deck fill.
+ * NOTE: this curve only touches author income. If big-room playtesting ever
+ * shows guessers snowballing, tune POINTS_CORRECT_GUESS instead.
+ */
+export const AUTHOR_MULTIPLIER_FIRST = 0.5;
+export const AUTHOR_MULTIPLIER_SECOND = 0.25;
+
+/** Author multiplier for a 1-based appearance number. */
+export function authorMultiplier(appearance: number): number {
+  return appearance <= 1 ? AUTHOR_MULTIPLIER_FIRST : AUTHOR_MULTIPLIER_SECOND;
+}
+
+/** How many times the author of the round at roundIndex has appeared so far (1-based). */
+export function authorAppearance(rounds: Round[], roundIndex: number): number {
+  const authorId = rounds[roundIndex]?.authorId;
+  if (!authorId) return 1;
+  let count = 0;
+  for (let i = 0; i <= roundIndex; i++) {
+    if (rounds[i].authorId === authorId) count += 1;
+  }
+  return count;
+}
+
+/**
+ * The deck is capped at this fraction of all submitted truths. Ending before
+ * every truth is revealed means players can never eliminate candidates by
+ * tracking whose truths have already shown up.
+ */
+export const ROUND_CAP_RATIO = 0.75;
+
+/** Maximum rounds allowed for a player count (75% of total truths). */
+export function maxRounds(playerCount: number): number {
+  return Math.max(1, Math.floor(playerCount * TRUTHS_PER_PLAYER * ROUND_CAP_RATIO));
+}
+
 export type Player = {
   id: string;
   name: string;
@@ -88,24 +127,51 @@ export function allTruthsSubmitted(players: Player[]): boolean {
 }
 
 /**
- * Build the randomized list of rounds from all submitted truths.
- * Each (player, truth) pair becomes one round, then the whole list is shuffled.
+ * Build the randomized round list from all submitted truths.
+ * Every player is guaranteed at least one truth in the deck when the round
+ * limit allows it; remaining slots up to roundLimit are filled randomly from
+ * the surplus truths. The deck is shuffled and cut so the game ends before
+ * every truth appears — keeping deduction by elimination impossible.
  */
-export function buildRounds(players: Player[]): Round[] {
-  const rounds: Round[] = [];
-  for (const player of players) {
-    for (const truth of player.truths) {
-      const text = truth.trim();
-      if (text.length === 0) continue;
-      rounds.push({
-        id: makeId("round"),
-        authorId: player.id,
-        truth: text,
-        guesses: {},
-      });
-    }
+export function buildRounds(players: Player[], roundLimit?: number): Round[] {
+  // Shuffled candidate truths per player, so the guaranteed pick is random too
+  const perPlayer = players.map((p) =>
+    shuffle(
+      p.truths
+        .map((truth) => truth.trim())
+        .filter((truth) => truth.length > 0)
+        .map((truth) => ({ authorId: p.id, truth })),
+    ),
+  );
+
+  const total = perPlayer.reduce((sum, truths) => sum + truths.length, 0);
+  const limit =
+    roundLimit === undefined ? total : Math.max(1, Math.min(roundLimit, total));
+  const withTruths = perPlayer.filter((truths) => truths.length > 0);
+
+  const picked: { authorId: string; truth: string }[] = [];
+
+  if (limit >= withTruths.length) {
+    // Guarantee one truth per player, then fill the rest from random surplus
+    for (const truths of withTruths) picked.push(truths[0]);
+    const leftovers = withTruths.flatMap((truths) => truths.slice(1));
+    picked.push(...shuffle(leftovers).slice(0, limit - picked.length));
+  } else {
+    // Short game: fewer rounds than players — spread truths across as many
+    // distinct players as the round count allows
+    picked.push(
+      ...shuffle(withTruths)
+        .slice(0, limit)
+        .map((truths) => truths[0]),
+    );
   }
-  return shuffle(rounds);
+
+  return shuffle(picked).map((entry) => ({
+    id: makeId("round"),
+    authorId: entry.authorId,
+    truth: entry.truth,
+    guesses: {},
+  }));
 }
 
 // ----------------------------------------------------------------------------
@@ -120,9 +186,11 @@ export type RoundScoreLine = {
 
 /**
  * Compute the points awarded for a single round given its guesses.
+ * `appearance` is which time this author's truth shows up (1-based) — the
+ * author's fooling reward is scaled by the diminishing author multiplier.
  * Returns a breakdown so the UI can explain the scoring.
  */
-export function scoreRound(round: Round): RoundScoreLine[] {
+export function scoreRound(round: Round, appearance: number): RoundScoreLine[] {
   const lines: RoundScoreLine[] = [];
   let fooled = 0;
 
@@ -140,10 +208,11 @@ export function scoreRound(round: Round): RoundScoreLine[] {
   }
 
   if (fooled > 0) {
+    const mult = authorMultiplier(appearance);
     lines.push({
       playerId: round.authorId,
-      reason: `Stayed hidden — fooled ${fooled} ${fooled === 1 ? "player" : "players"}`,
-      points: fooled * POINTS_PER_FOOLED,
+      reason: `Stayed hidden — fooled ${fooled} ${fooled === 1 ? "player" : "players"} (×${mult})`,
+      points: Math.round(fooled * POINTS_PER_FOOLED * mult),
     });
   }
 

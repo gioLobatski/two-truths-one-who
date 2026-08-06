@@ -9,16 +9,18 @@ export function RoundResultScreen({
   isLastRound,
   onNext,
   isHost,
+  authorAppearance,
 }: {
   round: Round;
   players: Player[];
   isLastRound: boolean;
   onNext: () => void;
   isHost: boolean;
+  authorAppearance: number;
 }) {
   const byId = (id: string) => players.find((p) => p.id === id);
   const author = byId(round.authorId);
-  const lines = scoreRound(round);
+  const lines = scoreRound(round, authorAppearance);
 
   const guessEntries = Object.entries(round.guesses).filter(
     ([guesserId]) => guesserId !== round.authorId,

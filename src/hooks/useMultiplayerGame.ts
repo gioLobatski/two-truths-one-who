@@ -22,7 +22,7 @@ export type MultiplayerActions = {
   removePlayer: (playerId: string) => Promise<void>;
   startSubmission: () => Promise<void>;
   setTruths: (playerId: string, truths: string[]) => Promise<void>;
-  startGame: () => Promise<void>;
+  startGame: (roundCount?: number) => Promise<void>;
   revealRound: () => Promise<void>;
   submitGuess: (guesserId: string, guessedId: string) => Promise<void>;
   scoreRound: () => Promise<void>;
@@ -77,9 +77,25 @@ export function useMultiplayerGame(gameId: string | null) {
         { event: "*", schema: "public", table: "rounds", filter: `game_id=eq.${gameId}` },
         () => refresh()
       )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [gameId, refresh]);
+
+  // Guesses have no game_id column, so scope this subscription to this game's
+  // round ids instead of listening to every guess in every room.
+  const roundIdsKey = (state?.rounds ?? []).map((r) => r.id).join(",");
+
+  useEffect(() => {
+    if (!gameId || !roundIdsKey) return;
+
+    const channel = supabase
+      .channel(`game-${gameId}-guesses`)
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "guesses" },
+        { event: "*", schema: "public", table: "guesses", filter: `round_id=in.(${roundIdsKey})` },
         () => refresh()
       )
       .subscribe();
@@ -87,7 +103,7 @@ export function useMultiplayerGame(gameId: string | null) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [gameId, refresh]);
+  }, [gameId, roundIdsKey, refresh]);
 
   // Action wrappers that call Supabase and optimistically update
   const actions: MultiplayerActions = {
@@ -122,11 +138,14 @@ export function useMultiplayerGame(gameId: string | null) {
       [refresh]
     ),
 
-    startGame: useCallback(async () => {
-      if (!gameId) return;
-      await startGame(gameId);
-      await refresh();
-    }, [gameId, refresh]),
+    startGame: useCallback(
+      async (roundCount?: number) => {
+        if (!gameId) return;
+        await startGame(gameId, roundCount);
+        await refresh();
+      },
+      [gameId, refresh]
+    ),
 
     revealRound: useCallback(async () => {
       if (!gameId) return;

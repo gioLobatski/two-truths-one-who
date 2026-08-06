@@ -6,6 +6,7 @@ import {
   Player,
   Round,
   TRUTHS_PER_PLAYER,
+  authorAppearance,
   buildRounds,
   createEmptyGame,
   makeId,
@@ -95,7 +96,10 @@ export function gameReducer(state: GameState, action: Action): GameState {
     case "SCORE_ROUND": {
       const round = state.rounds[state.currentRoundIndex];
       if (!round) return state;
-      const lines = scoreRound(round);
+      const lines = scoreRound(
+        round,
+        authorAppearance(state.rounds, state.currentRoundIndex),
+      );
       let players = state.players;
       for (const line of lines) {
         const current = players.find((p) => p.id === line.playerId);

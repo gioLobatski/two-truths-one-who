@@ -2,7 +2,7 @@
 // Each function corresponds to a reducer action in gameReducer.ts.
 
 import { supabase } from "./supabase";
-import { GameState, Phase, Player, Round, buildRounds, scoreRound, TRUTHS_PER_PLAYER } from "./game";
+import { GameState, Phase, Player, Round, authorAppearance, buildRounds, maxRounds, scoreRound, TRUTHS_PER_PLAYER } from "./game";
 
 // ============================================================================
 // Types for database rows
@@ -197,12 +197,20 @@ export async function setTruths(playerId: string, truths: string[]): Promise<voi
   if (error) throw new Error(`Failed to set truths: ${error.message}`);
 }
 
-/** Build rounds from all players' truths and start the game. */
-export async function startGame(gameId: string): Promise<void> {
+/** Build rounds from all players' truths and start the game.
+ * The deck is shuffled and cut to roundLimit (never more than 75% of all
+ * truths) so players can't deduce authors by elimination. */
+export async function startGame(gameId: string, roundLimit?: number): Promise<void> {
   const state = await fetchGameState(gameId);
   if (!state) throw new Error("Game not found");
 
-  const rounds = buildRounds(state.players);
+  // Enforce the cap server-side too, in case a client sends a bogus value
+  const capped =
+    roundLimit === undefined
+      ? undefined
+      : Math.min(roundLimit, maxRounds(state.players.length));
+
+  const rounds = buildRounds(state.players, capped);
 
   // Insert rounds
   const roundRows = rounds.map((r, i) => ({
@@ -241,7 +249,10 @@ export async function scoreCurrentRound(gameId: string): Promise<void> {
   const round = state.rounds[state.currentRoundIndex];
   if (!round) return;
 
-  const lines = scoreRound(round);
+  const lines = scoreRound(
+    round,
+    authorAppearance(state.rounds, state.currentRoundIndex)
+  );
 
   // Update each player's score
   for (const line of lines) {
