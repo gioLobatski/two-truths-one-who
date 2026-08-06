@@ -48,7 +48,7 @@ export function GuessingScreen({
               Start guessing
             </Button>
           ) : (
-            <p className="text-center text-sm text-violet-200/50">
+            <p className="text-center text-sm text-slate-300/60">
               Waiting for the host to start guessing...
             </p>
           )}
@@ -69,7 +69,7 @@ export function GuessingScreen({
               Reveal &amp; score
             </Button>
           ) : (
-            <p className="text-sm text-violet-200/50">
+            <p className="text-sm text-slate-300/60">
               Waiting for the host to reveal...
             </p>
           )}
@@ -90,7 +90,7 @@ export function GuessingScreen({
           <blockquote className="rounded-2xl bg-black/30 px-6 py-5 text-center text-lg font-medium text-white ring-1 ring-inset ring-white/10">
             &ldquo;{round.truth}&rdquo;
           </blockquote>
-          <p className="text-center text-sm text-violet-200/50">
+          <p className="text-center text-sm text-slate-300/60">
             Watching {pending.length} player{pending.length !== 1 ? "s" : ""} guess...
           </p>
         </Card>
@@ -104,7 +104,7 @@ export function GuessingScreen({
       <Screen>
         <Title>Guess locked in ✓</Title>
         <Card className="space-y-4 text-center">
-          <p className="text-violet-100">
+          <p className="text-white">
             Waiting for {pending.length} more player{pending.length !== 1 ? "s" : ""} to guess...
           </p>
         </Card>

@@ -37,7 +37,7 @@ export function LobbyScreen({
       <Card className="space-y-6">
         {/* Game code to share */}
         <div className="rounded-xl bg-black/30 px-4 py-3 text-center ring-1 ring-inset ring-white/10">
-          <p className="text-xs uppercase tracking-wide text-violet-300/60 mb-1">
+          <p className="text-xs uppercase tracking-wide text-cyan-200/70 mb-1">
             Game Code
           </p>
           <p className="font-mono text-lg font-bold text-white break-all">
@@ -45,7 +45,7 @@ export function LobbyScreen({
           </p>
           <button
             onClick={copyCode}
-            className="mt-2 text-sm text-violet-300 hover:text-violet-200"
+            className="mt-2 cursor-pointer text-sm text-cyan-300 hover:text-cyan-200"
           >
             {copied ? "✓ Copied!" : "Copy code"}
           </button>
@@ -53,7 +53,7 @@ export function LobbyScreen({
 
         {/* Player list */}
         {players.length === 0 ? (
-          <p className="py-6 text-center text-violet-200/50">
+          <p className="py-6 text-center text-slate-300/60">
             Waiting for players to join...
           </p>
         ) : (
@@ -64,7 +64,7 @@ export function LobbyScreen({
                 className="flex items-center justify-between rounded-xl bg-black/20 px-4 py-3 ring-1 ring-inset ring-white/5"
               >
                 <span className="font-medium text-white">
-                  <span className="mr-2 text-violet-300/60">{i + 1}.</span>
+                  <span className="mr-2 text-cyan-200/70">{i + 1}.</span>
                   {p.name}
                 </span>
               </li>
@@ -88,14 +88,14 @@ export function LobbyScreen({
         )}
 
         {!isHost && (
-          <p className="text-center text-sm text-violet-200/50">
+          <p className="text-center text-sm text-slate-300/60">
             Waiting for the host to start...
           </p>
         )}
 
         <button
           onClick={onLeave}
-          className="w-full text-center text-sm text-rose-300/60 hover:text-rose-300"
+          className="w-full cursor-pointer text-center text-sm text-rose-300/60 hover:text-rose-300"
         >
           Leave game
         </button>

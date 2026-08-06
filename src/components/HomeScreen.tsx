@@ -34,25 +34,25 @@ export function HomeScreen({
     return (
       <Screen>
         <div className="space-y-2">
-          <Title>Join a Game</Title>
+          <Title>Join a <span className="text-amber-400">Game</span></Title>
           <Subtitle>Enter the game code and your name</Subtitle>
         </div>
 
         <Card className="space-y-4">
           <div className="space-y-1">
-            <label className="text-xs font-semibold uppercase tracking-wide text-violet-300/60">
+            <label className="text-xs font-semibold uppercase tracking-wide text-cyan-200/70">
               Game Code
             </label>
             <input
               value={gameCode}
               onChange={(e) => setGameCode(e.target.value)}
               placeholder="Paste the game code"
-              className="w-full rounded-xl bg-black/30 px-4 py-3 text-white placeholder-violet-300/40 outline-none ring-1 ring-inset ring-white/10 focus:ring-violet-400"
+              className="w-full rounded-xl bg-black/40 px-4 py-3 text-white placeholder-white/30 outline-none ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-cyan-400"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold uppercase tracking-wide text-violet-300/60">
+            <label className="text-xs font-semibold uppercase tracking-wide text-cyan-200/70">
               Your Name
             </label>
             <input
@@ -61,7 +61,7 @@ export function HomeScreen({
               onKeyDown={(e) => e.key === "Enter" && handleJoin()}
               placeholder="What should we call you?"
               maxLength={24}
-              className="w-full rounded-xl bg-black/30 px-4 py-3 text-white placeholder-violet-300/40 outline-none ring-1 ring-inset ring-white/10 focus:ring-violet-400"
+              className="w-full rounded-xl bg-black/40 px-4 py-3 text-white placeholder-white/30 outline-none ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-cyan-400"
             />
           </div>
 
@@ -75,7 +75,7 @@ export function HomeScreen({
 
           <button
             onClick={() => setMode("home")}
-            className="w-full text-center text-sm text-violet-300/60 hover:text-violet-300"
+            className="w-full cursor-pointer text-center text-sm text-cyan-200/60 hover:text-cyan-100"
           >
             ← Back
           </button>
@@ -88,13 +88,13 @@ export function HomeScreen({
     return (
       <Screen>
         <div className="space-y-2">
-          <Title>Create a Game</Title>
+          <Title>Create a <span className="text-amber-400">Game</span></Title>
           <Subtitle>You&apos;ll host — enter your name to join</Subtitle>
         </div>
 
         <Card className="space-y-4">
           <div className="space-y-1">
-            <label className="text-xs font-semibold uppercase tracking-wide text-violet-300/60">
+            <label className="text-xs font-semibold uppercase tracking-wide text-cyan-200/70">
               Your Name
             </label>
             <input
@@ -103,7 +103,7 @@ export function HomeScreen({
               onKeyDown={(e) => e.key === "Enter" && handleCreate()}
               placeholder="What should we call you?"
               maxLength={24}
-              className="w-full rounded-xl bg-black/30 px-4 py-3 text-white placeholder-violet-300/40 outline-none ring-1 ring-inset ring-white/10 focus:ring-violet-400"
+              className="w-full rounded-xl bg-black/40 px-4 py-3 text-white placeholder-white/30 outline-none ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-cyan-400"
             />
           </div>
 
@@ -117,7 +117,7 @@ export function HomeScreen({
 
           <button
             onClick={() => setMode("home")}
-            className="w-full text-center text-sm text-violet-300/60 hover:text-violet-300"
+            className="w-full cursor-pointer text-center text-sm text-cyan-200/60 hover:text-cyan-100"
           >
             ← Back
           </button>
@@ -130,7 +130,10 @@ export function HomeScreen({
     <Screen>
       <Logo size={140} />
       <div className="space-y-2">
-        <Title>Two Truths, One Who</Title>
+        <Title>
+          <span className="text-cyan-400">Two Truths,</span>{" "}
+          <span className="text-amber-400">One Who</span>
+        </Title>
         <Subtitle>
           Write truths about yourself. Guess who wrote what. Fool everyone.
         </Subtitle>

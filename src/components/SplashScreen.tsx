@@ -1,16 +1,18 @@
 "use client";
 
-import { Logo } from "./Logo";
-import { Screen, Title } from "./ui";
+import { useEffect, useState } from "react";
+import { LoadingScreen } from "./LoadingScreen";
 
-export function SplashScreen() {
+export function SplashScreen({ onComplete }: { onComplete?: () => void }) {
+  const [ready, setReady] = useState(false);
+
+  // Give the intro a brief moment, then let the bar race to 100% and exit.
+  useEffect(() => {
+    const timer = setTimeout(() => setReady(true), 800);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <Screen>
-      <div className="flex flex-col items-center gap-6 animate-pulse">
-        <Logo size={200} />
-        <Title>Two Truths, One Who</Title>
-        <p className="text-sm text-violet-200/60">Loading…</p>
-      </div>
-    </Screen>
+    <LoadingScreen label="Loading" ready={ready} onComplete={onComplete} showTitle />
   );
 }

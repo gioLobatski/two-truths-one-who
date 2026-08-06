@@ -39,7 +39,7 @@ export function RoundResultScreen({
         </blockquote>
 
         <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-violet-300/60">
+          <p className="text-xs font-semibold uppercase tracking-wide text-cyan-200/70">
             Guesses
           </p>
           {guessEntries.map(([guesserId, guessedId]) => {
@@ -59,11 +59,11 @@ export function RoundResultScreen({
         </div>
 
         <div className="space-y-2 border-t border-white/10 pt-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-violet-300/60">
+          <p className="text-xs font-semibold uppercase tracking-wide text-cyan-200/70">
             Points this round
           </p>
           {lines.length === 0 ? (
-            <p className="text-sm text-violet-200/50">
+            <p className="text-sm text-slate-300/60">
               No points awarded this round.
             </p>
           ) : (
@@ -72,8 +72,8 @@ export function RoundResultScreen({
                 key={i}
                 className="flex items-center justify-between text-sm"
               >
-                <span className="text-violet-100">
-                  <span className="font-semibold text-white">
+                <span className="text-white">
+                  <span className="font-semibold">
                     {byId(line.playerId)?.name}
                   </span>{" "}
                   — {line.reason}
@@ -91,7 +91,7 @@ export function RoundResultScreen({
             {isLastRound ? "See final scores" : "Next round"}
           </Button>
         ) : (
-          <p className="text-center text-sm text-violet-200/50">
+          <p className="text-center text-sm text-slate-300/60">
             Waiting for the host to continue...
           </p>
         )}

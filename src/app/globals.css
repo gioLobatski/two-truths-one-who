@@ -1,13 +1,46 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0f0a1e;
-  --foreground: #f5f3ff;
+  --font-size: 16px;
+  --background: #000000;
+  --foreground: #f5f0e1;
+  --border: rgba(255, 255, 255, 0.1);
+  --radius: 0.625rem;
 }
 
-body {
-  background: radial-gradient(circle at 20% 20%, #1e1247 0%, #0f0a1e 55%, #080511 100%);
-  color: var(--foreground);
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-border: var(--border);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  body {
+    background: #000000;
+    color: var(--foreground);
+    font-family: var(--font-inter);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Semantic font utilities (headings/body can diverge later) */
+  .font-heading {
+    font-family: var(--font-inter);
+  }
+
+  .font-body {
+    font-family: var(--font-inter);
+  }
 }

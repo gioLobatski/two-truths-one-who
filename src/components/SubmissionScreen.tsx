@@ -40,7 +40,7 @@ export function SubmissionScreen({
         <Title>All truths locked in 🔒</Title>
         <Subtitle>The randomizer is ready!</Subtitle>
         <Card className="space-y-6 text-center">
-          <p className="text-violet-100">
+          <p className="text-white">
             {players.length} players · {totalTruths} truths in the deck.
           </p>
 
@@ -49,14 +49,14 @@ export function SubmissionScreen({
               {/* Deck size picker — the deck is shuffled and cut, so nobody
                   can track whose truths have already appeared */}
               <div className="rounded-xl bg-black/30 px-4 py-4 ring-1 ring-inset ring-white/10">
-                <p className="text-xs font-semibold uppercase tracking-wide text-violet-300/60">
+                <p className="text-xs font-semibold uppercase tracking-wide text-cyan-200/70">
                   Rounds to play
                 </p>
                 <div className="mt-3 flex items-center justify-center gap-4">
                   <button
                     onClick={() => setRoundCount((c) => Math.max(minRounds, c - 1))}
                     disabled={roundCount <= minRounds}
-                    className="h-10 w-10 rounded-lg bg-white/10 text-lg font-bold text-white disabled:opacity-30"
+                    className="h-10 w-10 cursor-pointer rounded-lg bg-white/10 text-lg font-bold text-white disabled:opacity-30"
                   >
                     −
                   </button>
@@ -66,12 +66,12 @@ export function SubmissionScreen({
                   <button
                     onClick={() => setRoundCount((c) => Math.min(roundCap, c + 1))}
                     disabled={roundCount >= roundCap}
-                    className="h-10 w-10 rounded-lg bg-white/10 text-lg font-bold text-white disabled:opacity-30"
+                    className="h-10 w-10 cursor-pointer rounded-lg bg-white/10 text-lg font-bold text-white disabled:opacity-30"
                   >
                     +
                   </button>
                 </div>
-                <p className="mt-3 text-xs text-violet-200/50">
+                <p className="mt-3 text-xs text-slate-300/60">
                   Max {roundCap} of {totalTruths} truths — everyone is guaranteed
                   one, the rest is drawn at random, and the deck is cut early so
                   nobody can count cards.
@@ -83,7 +83,7 @@ export function SubmissionScreen({
               </Button>
             </>
           ) : (
-            <p className="text-sm text-violet-200/50">
+            <p className="text-sm text-slate-300/60">
               Waiting for the host to start...
             </p>
           )}
@@ -98,10 +98,10 @@ export function SubmissionScreen({
       <Screen>
         <Title>Truths submitted ✓</Title>
         <Card className="space-y-4 text-center">
-          <p className="text-violet-100">
+          <p className="text-white">
             Waiting for everyone else to submit their truths...
           </p>
-          <p className="text-sm text-violet-200/50">
+          <p className="text-sm text-slate-300/60">
             {players.filter((p) => p.truths.some((t) => t.trim())).length} /{" "}
             {players.length} players ready
           </p>
@@ -131,7 +131,7 @@ export function SubmissionScreen({
       <Card className="space-y-4">
         {draft.map((value, i) => (
           <div key={i} className="space-y-1">
-            <label className="text-xs font-semibold uppercase tracking-wide text-violet-300/60">
+            <label className="text-xs font-semibold uppercase tracking-wide text-cyan-200/70">
               Truth {i + 1}
             </label>
             <textarea
@@ -142,7 +142,7 @@ export function SubmissionScreen({
               rows={2}
               maxLength={140}
               placeholder="Something true but hard to trace back to you…"
-              className="w-full resize-none rounded-xl bg-black/30 px-4 py-3 text-white placeholder-violet-300/40 outline-none ring-1 ring-inset ring-white/10 focus:ring-violet-400"
+              className="w-full resize-none rounded-xl bg-black/40 px-4 py-3 text-white placeholder-white/30 outline-none ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-cyan-400"
             />
           </div>
         ))}

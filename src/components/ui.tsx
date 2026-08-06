@@ -12,12 +12,12 @@ export function Button({
   ...props
 }: ButtonProps) {
   const base =
-    "rounded-xl px-5 py-3 font-semibold transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40";
+    "rounded-xl px-5 py-3 font-semibold transition cursor-pointer active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40";
   const variants: Record<string, string> = {
     primary:
-      "bg-violet-500 text-white shadow-lg shadow-violet-900/40 hover:bg-violet-400",
+      "bg-amber-400 text-black shadow-lg shadow-amber-900/30 hover:bg-amber-300",
     ghost:
-      "bg-white/5 text-violet-100 ring-1 ring-inset ring-white/15 hover:bg-white/10",
+      "bg-cyan-500/10 text-cyan-100 ring-1 ring-inset ring-cyan-400/30 hover:bg-cyan-500/20",
     danger: "bg-rose-500/90 text-white hover:bg-rose-400",
   };
   return <button className={`${base} ${variants[variant]} ${className}`} {...props} />;
@@ -32,7 +32,7 @@ export function Card({
 }) {
   return (
     <div
-      className={`w-full max-w-xl rounded-3xl bg-white/[0.06] p-8 shadow-2xl shadow-black/40 ring-1 ring-inset ring-white/10 backdrop-blur ${className}`}
+      className={`w-full max-w-xl rounded-2xl bg-white/[0.06] p-5 shadow-2xl shadow-black/40 ring-1 ring-inset ring-white/10 backdrop-blur sm:rounded-3xl sm:p-8 ${className}`}
     >
       {children}
     </div>
@@ -41,7 +41,7 @@ export function Card({
 
 export function Screen({ children }: { children: ReactNode }) {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6 p-6">
+    <main className="flex min-h-dvh flex-col items-center justify-center gap-5 p-4 sm:gap-6 sm:p-6">
       {children}
     </main>
   );
@@ -49,12 +49,12 @@ export function Screen({ children }: { children: ReactNode }) {
 
 export function Title({ children }: { children: ReactNode }) {
   return (
-    <h1 className="text-center text-3xl font-black tracking-tight text-white sm:text-4xl">
+    <h1 className="font-heading text-center text-2xl font-black tracking-tight text-balance text-white sm:text-4xl">
       {children}
     </h1>
   );
 }
 
 export function Subtitle({ children }: { children: ReactNode }) {
-  return <p className="text-center text-sm text-violet-200/70">{children}</p>;
+  return <p className="text-center text-sm text-slate-300/70">{children}</p>;
 }

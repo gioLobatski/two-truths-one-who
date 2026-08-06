@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { createGame, joinGame, gameExists } from "@/lib/supabaseService";
 import { authorAppearance } from "@/lib/game";
 import { useMultiplayerGame } from "@/hooks/useMultiplayerGame";
@@ -11,7 +11,7 @@ import { GuessingScreen } from "@/components/GuessingScreen";
 import { RoundResultScreen } from "@/components/RoundResultScreen";
 import { GameOverScreen } from "@/components/GameOverScreen";
 import { SplashScreen } from "@/components/SplashScreen";
-import { Logo } from "@/components/Logo";
+import { LoadingScreen } from "@/components/LoadingScreen";
 
 // Store current player ID in localStorage for identity across refreshes
 const PLAYER_ID_KEY = "two-truths-player-id";
@@ -42,12 +42,6 @@ export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
 
   const { state, loading: stateLoading, actions } = useMultiplayerGame(gameId);
-
-  // Show the splash screen briefly when the app first opens
-  useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 1800);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Create a new game — the creator joins as a player so they can play too
   const handleCreateGame = useCallback(async (name: string) => {
@@ -100,7 +94,7 @@ export default function Home() {
   }, []);
 
   if (showSplash) {
-    return <SplashScreen />;
+    return <SplashScreen onComplete={() => setShowSplash(false)} />;
   }
 
   // Show home screen if no game
@@ -116,12 +110,7 @@ export default function Home() {
 
   // Loading state
   if (stateLoading || !state) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-6">
-        <Logo size={160} className="animate-pulse" />
-        <p className="text-violet-200/70 animate-pulse">Loading game...</p>
-      </div>
-    );
+    return <LoadingScreen label="Loading game" />;
   }
 
   const currentRound = state.rounds[state.currentRoundIndex];

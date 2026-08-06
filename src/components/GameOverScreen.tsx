@@ -39,7 +39,7 @@ export function GameOverScreen({
               <span className="w-6 text-center">{medals[i] ?? i + 1}</span>
               {p.name}
             </span>
-            <span className="font-black text-violet-200">{p.score}</span>
+            <span className="font-black text-amber-400">{p.score}</span>
           </div>
         ))}
 
