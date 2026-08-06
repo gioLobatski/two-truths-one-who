@@ -26,6 +26,16 @@ export function RoundResultScreen({
     ([guesserId]) => guesserId !== round.authorId,
   );
 
+  // Running scoreboard — scores already include this round's points
+  const ranked = [...players].sort((a, b) => b.score - a.score);
+  const gainedThisRound = new Map<string, number>();
+  for (const line of lines) {
+    gainedThisRound.set(
+      line.playerId,
+      (gainedThisRound.get(line.playerId) ?? 0) + line.points,
+    );
+  }
+
   return (
     <Screen>
       <div className="space-y-2">
@@ -84,6 +94,33 @@ export function RoundResultScreen({
               </div>
             ))
           )}
+        </div>
+
+        <div className="space-y-2 border-t border-white/10 pt-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-cyan-200/70">
+            Scoreboard
+          </p>
+          {ranked.map((p, i) => (
+            <div
+              key={p.id}
+              className="flex items-center justify-between rounded-xl bg-black/20 px-4 py-2 text-sm ring-1 ring-inset ring-white/5"
+            >
+              <span className="flex items-center gap-3 text-white">
+                <span className="w-5 text-center font-semibold text-cyan-200/70">
+                  {i + 1}
+                </span>
+                {p.name}
+              </span>
+              <span className="flex items-baseline gap-2">
+                {gainedThisRound.has(p.id) && (
+                  <span className="text-xs font-semibold text-emerald-300">
+                    +{gainedThisRound.get(p.id)}
+                  </span>
+                )}
+                <span className="font-bold text-amber-400">{p.score}</span>
+              </span>
+            </div>
+          ))}
         </div>
 
         {isHost ? (

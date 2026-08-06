@@ -1,25 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { Player } from "@/lib/game";
+import { MIN_PLAYERS, Player } from "@/lib/game";
 import { Button, Card, Screen, Subtitle, Title } from "./ui";
 
 export function LobbyScreen({
   gameId,
   players,
   isHost,
+  isModerator,
   onStart,
   onLeave,
 }: {
   gameId: string;
   players: Player[];
   isHost: boolean;
+  isModerator: boolean;
   onStart: () => void;
   onLeave: () => void;
 }) {
   const [copied, setCopied] = useState(false);
 
-  const canStart = players.length >= 2;
+  const canStart = players.length >= MIN_PLAYERS;
 
   function copyCode() {
     navigator.clipboard.writeText(gameId);
@@ -31,7 +33,7 @@ export function LobbyScreen({
     <Screen>
       <div className="space-y-2">
         <Title>Game Lobby</Title>
-        <Subtitle>Share the code so others can join</Subtitle>
+        <Subtitle>Share the code — at least {MIN_PLAYERS} players needed</Subtitle>
       </div>
 
       <Card className="space-y-6">
@@ -72,6 +74,14 @@ export function LobbyScreen({
           </ul>
         )}
 
+        {/* Host role notice */}
+        {isModerator && (
+          <p className="rounded-xl bg-cyan-500/10 px-4 py-3 text-center text-sm text-cyan-100 ring-1 ring-inset ring-cyan-400/20">
+            You&apos;re moderating this room — you&apos;ll run each phase without
+            submitting truths or guessing.
+          </p>
+        )}
+
         {/* Host controls */}
         {isHost && (
           <Button
@@ -81,8 +91,8 @@ export function LobbyScreen({
           >
             {canStart
               ? "Start — enter your truths"
-              : `Need ${2 - players.length} more player${
-                  2 - players.length === 1 ? "" : "s"
+              : `Need ${MIN_PLAYERS - players.length} more player${
+                  MIN_PLAYERS - players.length === 1 ? "" : "s"
                 }`}
           </Button>
         )}

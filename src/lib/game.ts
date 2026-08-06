@@ -4,6 +4,13 @@
 
 export const TRUTHS_PER_PLAYER = 2;
 
+/**
+ * Minimum participating players. The room creator may choose to moderate
+ * instead of playing, so the player list itself must always hold at least
+ * three participants for the deduction loop to work.
+ */
+export const MIN_PLAYERS = 3;
+
 /** Points a guesser earns for correctly naming the author of a truth. */
 export const POINTS_CORRECT_GUESS = 100;
 /** Points the author earns for each opponent they fooled (wrong guess). */

@@ -92,6 +92,22 @@ export function SubmissionScreen({
     );
   }
 
+  // Moderator (host who isn't playing) — just watches submissions come in
+  if (!currentPlayer) {
+    const readyCount = players.filter((p) => p.truths.some((t) => t.trim())).length;
+    return (
+      <Screen>
+        <Title>Waiting for truths…</Title>
+        <Subtitle>Players are writing their truths</Subtitle>
+        <Card className="space-y-4 text-center">
+          <p className="text-sm text-slate-300/60">
+            {readyCount} / {players.length} players ready
+          </p>
+        </Card>
+      </Screen>
+    );
+  }
+
   // Current player already submitted
   if (hasSubmitted || submitted) {
     return (

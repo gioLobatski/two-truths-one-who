@@ -2,7 +2,7 @@
 // Each function corresponds to a reducer action in gameReducer.ts.
 
 import { supabase } from "./supabase";
-import { GameState, Phase, Player, Round, authorAppearance, buildRounds, maxRounds, scoreRound, TRUTHS_PER_PLAYER } from "./game";
+import { GameState, MIN_PLAYERS, Phase, Player, Round, authorAppearance, buildRounds, maxRounds, scoreRound, TRUTHS_PER_PLAYER } from "./game";
 
 // ============================================================================
 // Types for database rows
@@ -203,6 +203,11 @@ export async function setTruths(playerId: string, truths: string[]): Promise<voi
 export async function startGame(gameId: string, roundLimit?: number): Promise<void> {
   const state = await fetchGameState(gameId);
   if (!state) throw new Error("Game not found");
+
+  // Guard server-side too, in case a client tries to start early
+  if (state.players.length < MIN_PLAYERS) {
+    throw new Error(`Needs at least ${MIN_PLAYERS} players to start`);
+  }
 
   // Enforce the cap server-side too, in case a client sends a bogus value
   const capped =

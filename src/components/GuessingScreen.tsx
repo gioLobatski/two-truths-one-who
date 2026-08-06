@@ -78,6 +78,26 @@ export function GuessingScreen({
     );
   }
 
+  // Moderator — watches the round instead of guessing
+  if (playerId === null || !players.some((p) => p.id === playerId)) {
+    return (
+      <Screen>
+        <Subtitle>
+          Round {roundNumber} of {totalRounds}
+        </Subtitle>
+        <Title>You&apos;re running this one 🎬</Title>
+        <Card className="space-y-6">
+          <blockquote className="rounded-2xl bg-black/30 px-6 py-5 text-center text-lg font-medium text-white ring-1 ring-inset ring-white/10">
+            &ldquo;{round.truth}&rdquo;
+          </blockquote>
+          <p className="text-center text-sm text-slate-300/60">
+            Watching {pending.length} player{pending.length !== 1 ? "s" : ""} guess...
+          </p>
+        </Card>
+      </Screen>
+    );
+  }
+
   // Author doesn't guess
   if (isAuthor) {
     return (
