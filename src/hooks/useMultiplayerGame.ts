@@ -4,7 +4,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { GameState } from "@/lib/game";
+import { GameState, GUESS_TIME_LIMIT } from "@/lib/game";
 import {
   addPlayer,
   fetchGameState,
@@ -159,6 +159,12 @@ export function useMultiplayerGame(gameId: string | null) {
         if (!current) return;
         const round = current.rounds[current.currentRoundIndex];
         if (!round) return;
+        // Reject guesses that arrive after the guessing window has closed
+        if (current.phase === "guessing" && current.phaseStartedAt) {
+          const deadline =
+            Date.parse(current.phaseStartedAt) + GUESS_TIME_LIMIT * 1000;
+          if (Date.now() > deadline) return;
+        }
         await submitGuess(round.id, guesserId, guessedId);
         await refresh();
       },

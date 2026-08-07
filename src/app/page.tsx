@@ -177,6 +177,7 @@ export default function Home() {
             roundNumber={game.currentRoundIndex + 1}
             totalRounds={game.rounds.length}
             phase={game.phase}
+            phaseStartedAt={game.phaseStartedAt}
             onReveal={() => actions.revealRound()}
             onSubmitGuess={(guesserId, guessedId) => actions.submitGuess(guesserId, guessedId)}
             onScore={() => actions.scoreRound()}

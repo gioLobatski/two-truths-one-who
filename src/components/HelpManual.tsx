@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   AUTHOR_MULTIPLIER_FIRST,
   AUTHOR_MULTIPLIER_SECOND,
+  GUESS_TIME_LIMIT,
   MIN_PLAYERS,
   POINTS_CORRECT_GUESS,
   POINTS_PER_FOOLED,
@@ -37,6 +38,11 @@ export function ManualContent() {
             guesses who wrote it.
           </li>
           <li>
+            Guesses lock after{" "}
+            <strong className="text-white">{GUESS_TIME_LIMIT} seconds</strong>{" "}
+            — miss the timer and the round scores without you.
+          </li>
+          <li>
             The author is revealed, points are awarded, and the next truth is
             drawn at random.
           </li>
@@ -50,7 +56,11 @@ export function ManualContent() {
         <ul className="list-disc space-y-1 pl-5">
           <li>
             <strong className="text-white">Players:</strong> lock in your
-            truths, then tap a name to guess each round.
+            truths, then tap a name to guess each round — before the{" "}
+            <strong className="text-white">
+              {GUESS_TIME_LIMIT}-second
+            </strong>{" "}
+            timer runs out.
           </li>
           <li>
             <strong className="text-white">Host:</strong> moves the room
@@ -86,6 +96,10 @@ export function ManualContent() {
           <li>
             The deck is cut before every truth appears — nobody can win by
             elimination.
+          </li>
+          <li>
+            Let the timer hit zero and you sit the round out — no guess, no
+            points.
           </li>
         </ul>
       </section>
@@ -176,20 +190,63 @@ export function GameStartIntro({ onClose }: { onClose: () => void }) {
               <span className="text-amber-400">One Who?</span>
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-slate-300">
-              A party game of deduction and deception. Every player writes{" "}
-              <strong className="text-white">
-                {TRUTHS_PER_PLAYER} true things
+              A mash-up of two party classics —{" "}
+              <strong className="text-white">Two Truths and a Lie</strong>{" "}
+              and the <strong className="text-white">
+                &ldquo;get to know me&rdquo;
               </strong>{" "}
-              about themselves — true, but vague enough that they can&apos;t be
-              traced back easily.
+              icebreaker — remixed into a game of deduction.
             </p>
-            <p className="mt-3 text-sm leading-relaxed text-slate-300">
-              Every round, one truth is revealed{" "}
-              <strong className="text-white">anonymously</strong> and the whole
-              room guesses <strong className="text-white">who wrote it</strong>.
-              Read people to score — and stay hidden when your own truth comes
-              up.
-            </p>
+
+            <div className="mt-4 space-y-4">
+              <section className="space-y-1.5">
+                <h3 className="text-xs font-bold uppercase tracking-wide text-cyan-300">
+                  Two Truths and a Lie
+                </h3>
+                <p className="text-sm leading-relaxed">
+                  The classic bluffing game: each person shares{" "}
+                  <strong className="text-white">three statements</strong>{" "}
+                  about themselves — two true, one made up. The group
+                  cross-examines, looks for tells, and votes on{" "}
+                  <strong className="text-white">which one is the lie</strong>.
+                  The fun is selling a fake story with a straight face.
+                </p>
+              </section>
+
+              <section className="space-y-1.5">
+                <h3 className="text-xs font-bold uppercase tracking-wide text-cyan-300">
+                  &ldquo;Get to know me&rdquo; games
+                </h3>
+                <p className="text-sm leading-relaxed">
+                  The icebreaker side: players take turns sharing{" "}
+                  <strong className="text-white">real facts</strong> about
+                  themselves — first jobs, hidden talents, weird habits. There
+                  are no winners; the point is discovering that the people
+                  around you are full of surprises.
+                </p>
+              </section>
+
+              <section className="space-y-1.5">
+                <h3 className="text-xs font-bold uppercase tracking-wide text-amber-300">
+                  How they become Two Truths, One Who
+                </h3>
+                <p className="text-sm leading-relaxed">
+                  We keep the personal truths but{" "}
+                  <strong className="text-white">drop the lie</strong> —
+                  everything you write here is true. Then we flip the
+                  question: truths are revealed{" "}
+                  <strong className="text-white">anonymously</strong>, and
+                  instead of spotting the fake, the room guesses{" "}
+                  <strong className="text-white">who wrote it</strong>.
+                </p>
+                <p className="text-sm leading-relaxed">
+                  Deception now lives in staying untraceable — write truths
+                  that don&apos;t sound like you, and read your friends better
+                  than they read you.
+                </p>
+              </section>
+            </div>
+
             <Button className="mt-6 w-full" onClick={() => setStep(2)}>
               Next — the mechanics
             </Button>

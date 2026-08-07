@@ -159,6 +159,7 @@ export async function fetchGameState(gameId: string): Promise<GameState | null> 
     players: gamePlayers,
     rounds: gameRounds,
     currentRoundIndex: game.current_round_index,
+    phaseStartedAt: game.updated_at,
   };
 }
 

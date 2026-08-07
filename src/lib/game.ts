@@ -16,6 +16,9 @@ export const POINTS_CORRECT_GUESS = 100;
 /** Points the author earns for each opponent they fooled (wrong guess). */
 export const POINTS_PER_FOOLED = 50;
 
+/** Seconds players get to lock in their guess each round. */
+export const GUESS_TIME_LIMIT = 45;
+
 /**
  * Diminishing author multiplier by appearance order: an author's first
  * revealed truth pays ×0.5 of the base fooling reward, their second (and any
@@ -85,6 +88,11 @@ export type GameState = {
   players: Player[];
   rounds: Round[];
   currentRoundIndex: number;
+  /**
+   * When the current phase began (ISO timestamp). Sourced from the games
+   * row's updated_at, so every client derives the same guess deadline.
+   */
+  phaseStartedAt: string | null;
 };
 
 // ----------------------------------------------------------------------------
@@ -118,6 +126,7 @@ export function createEmptyGame(): GameState {
     players: [],
     rounds: [],
     currentRoundIndex: 0,
+    phaseStartedAt: null,
   };
 }
 
