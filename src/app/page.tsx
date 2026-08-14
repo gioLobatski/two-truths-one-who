@@ -13,6 +13,7 @@ import { GameOverScreen } from "@/components/GameOverScreen";
 import { SplashScreen } from "@/components/SplashScreen";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { GameStartIntro, HelpButton } from "@/components/HelpManual";
+import { ConnectButton } from "@/components/ConnectButton";
 
 // Store current player ID in localStorage for identity across refreshes
 const PLAYER_ID_KEY = "two-truths-player-id";
@@ -125,6 +126,7 @@ export default function Home() {
           onJoinGame={handleJoinGame}
           loading={loading}
         />
+        <ConnectButton />
         <HelpButton />
       </>
     );
@@ -214,6 +216,7 @@ export default function Home() {
   return (
     <>
       {renderPhase()}
+      <ConnectButton />
       <HelpButton />
     </>
   );
