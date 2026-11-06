@@ -1,13 +1,15 @@
 "use client";
 
-import { Player } from "@/lib/game";
 import { Button, Card, Screen, Subtitle, Title } from "./ui";
+
+// Final standings only need names and scores, so both games qualify.
+type ScoredPlayer = { id: string; name: string; score: number };
 
 export function GameOverScreen({
   players,
   onPlayAgain,
 }: {
-  players: Player[];
+  players: ScoredPlayer[];
   onPlayAgain: () => void;
 }) {
   const ranked = [...players].sort((a, b) => b.score - a.score);

@@ -9,10 +9,11 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Two Truths, One Who",
-  description: "A local party game — guess whose truth it is.",
+  title: "Icebreaker Arcade",
+  description:
+    "Two room-based party games for getting to know people — Two Truths, One Who and Tricked or Treat.",
   icons: {
-    icon: "/2-truths-1-who-logo.png",
+    icon: "/Cool_Icebreaker_Mascot_Badge-removebg-preview.png",
   },
 };
 

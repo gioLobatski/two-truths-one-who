@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Button, Card, Screen, Subtitle, Title } from "./ui";
 import { Logo } from "./Logo";
@@ -194,6 +195,10 @@ export function HomeScreen({
           Join Game
         </Button>
       </Card>
+
+      <Link href="/" className="text-sm text-cyan-200/60 hover:text-cyan-100">
+        ← Other games
+      </Link>
     </Screen>
   );
 }

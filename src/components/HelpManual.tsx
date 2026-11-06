@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { ReactNode } from "react";
 import {
   AUTHOR_MULTIPLIER_FIRST,
   AUTHOR_MULTIPLIER_SECOND,
@@ -112,7 +113,7 @@ export function ManualContent() {
  * Hovering shows a "Click me to know more" hint; clicking opens the manual
  * as a centered lightbox modal.
  */
-export function HelpButton() {
+export function HelpButton({ content }: { content?: ReactNode }) {
   const [hovered, setHovered] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -158,7 +159,7 @@ export function HelpButton() {
                 ✕
               </button>
             </div>
-            <ManualContent />
+            {content ?? <ManualContent />}
             <Button className="mt-6 w-full" onClick={() => setOpen(false)}>
               Got it!
             </Button>

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import { Logo } from "./Logo";
-import { Title } from "./ui";
 
 /**
  * Full-screen loading overlay with an animated progress bar.
@@ -21,11 +21,17 @@ export function LoadingScreen({
   ready = false,
   onComplete,
   showTitle = false,
+  title,
+  logo,
 }: {
   label?: string;
   ready?: boolean;
   onComplete?: () => void;
   showTitle?: boolean;
+  /** Custom title markup when showTitle is set (defaults to game 1). */
+  title?: ReactNode;
+  /** Which brand mark to show (defaults to the Two Truths logo). */
+  logo?: { src: string; alt: string };
 }) {
   const [progress, setProgress] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
@@ -70,14 +76,15 @@ export function LoadingScreen({
       }`}
     >
       <div className="flex min-h-dvh flex-col items-center justify-center gap-8 p-6">
-        <Logo size={168} className={ready ? "" : "animate-pulse"} />
+        <Logo size={168} logo={logo} className={ready ? "" : "animate-pulse"} />
 
-        {showTitle && (
-          <Title>
-            <span className="text-cyan-400">Two Truths,</span>{" "}
-            <span className="text-amber-400">One Who</span>
-          </Title>
-        )}
+        {showTitle &&
+          (title ?? (
+            <h1 className="font-heading text-center text-2xl font-black tracking-tight text-balance text-white sm:text-4xl">
+              <span className="text-cyan-400">Two Truths,</span>{" "}
+              <span className="text-amber-400">One Who</span>
+            </h1>
+          ))}
 
         <div className="w-64 max-w-[80vw]">
           <div className="h-1.5 overflow-hidden rounded-full bg-white/10">

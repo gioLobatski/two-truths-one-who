@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { MIN_PLAYERS, Player } from "@/lib/game";
+import { MIN_PLAYERS } from "@/lib/game";
 import { Button, Card, Screen, Subtitle, Title } from "./ui";
+
+// Only name/id matter in the lobby, so both games' player lists qualify.
+type LobbyPlayer = { id: string; name: string };
 
 export function LobbyScreen({
   gameId,
@@ -11,13 +14,19 @@ export function LobbyScreen({
   isModerator,
   onStart,
   onLeave,
+  submitLabel = "Start — enter your statements",
+  moderatorNotice = "You're moderating this room — you'll run each phase without submitting anything or guessing.",
 }: {
   gameId: string;
-  players: Player[];
+  players: LobbyPlayer[];
   isHost: boolean;
   isModerator: boolean;
   onStart: () => void;
   onLeave: () => void;
+  /** Game-flavored copy for the host's start button. */
+  submitLabel?: string;
+  /** Game-flavored copy for the moderator banner. */
+  moderatorNotice?: string;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -77,8 +86,7 @@ export function LobbyScreen({
         {/* Host role notice */}
         {isModerator && (
           <p className="rounded-xl bg-cyan-500/10 px-4 py-3 text-center text-sm text-cyan-100 ring-1 ring-inset ring-cyan-400/20">
-            You&apos;re moderating this room — you&apos;ll run each phase without
-            submitting truths or guessing.
+            {moderatorNotice}
           </p>
         )}
 
@@ -90,7 +98,7 @@ export function LobbyScreen({
             className="w-full"
           >
             {canStart
-              ? "Start — enter your truths"
+              ? submitLabel
               : `Need ${MIN_PLAYERS - players.length} more player${
                   MIN_PLAYERS - players.length === 1 ? "" : "s"
                 }`}
