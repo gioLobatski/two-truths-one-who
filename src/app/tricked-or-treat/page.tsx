@@ -148,6 +148,16 @@ export default function TrickedOrTreatPage() {
   const game = state;
   const activeGameId = gameId;
 
+  // Scoring/voting actions talk to Supabase directly; without this wrapper a
+  // rejected write (e.g. a schema column missing) would die silently as an
+  // unhandled rejection. Surface it instead.
+  function runQuietly(fn: () => Promise<void>) {
+    setError(null);
+    fn().catch((err) =>
+      setError(err instanceof Error ? err.message : "Action failed"),
+    );
+  }
+
   const currentRound = game.rounds[game.currentRoundIndex];
   const isLastRound = game.currentRoundIndex === game.rounds.length - 1;
 
@@ -160,7 +170,7 @@ export default function TrickedOrTreatPage() {
             players={game.players}
             isHost={isHost}
             isModerator={isHost && !game.players.some((p) => p.id === playerId)}
-            onStart={() => actions.startSubmission()}
+            onStart={() => runQuietly(() => actions.startSubmission())}
             onLeave={handleLeave}
             submitLabel="Start — write your statements"
             moderatorNotice="You're running this room — you'll deal each round without writing statements or voting. The truth stays hidden until you click the peek button, so you can screen-share safely."
@@ -173,9 +183,11 @@ export default function TrickedOrTreatPage() {
             players={game.players}
             playerId={playerId}
             onSetStatements={(pid, statements, avatar) =>
-              actions.setStatements(pid, statements, avatar)
+              runQuietly(() => actions.setStatements(pid, statements, avatar))
             }
-            onStartGame={(roundCount) => actions.startGame(roundCount)}
+            onStartGame={(roundCount) =>
+              runQuietly(() => actions.startGame(roundCount))
+            }
             isHost={isHost}
           />
         );
@@ -192,9 +204,11 @@ export default function TrickedOrTreatPage() {
             totalRounds={game.rounds.length}
             phase={game.phase}
             phaseStartedAt={game.phaseStartedAt}
-            onOpenVoting={() => actions.startVoting()}
-            onSubmitVote={(voterId, vote) => actions.submitVote(voterId, vote)}
-            onScore={() => actions.scoreRound()}
+            onOpenVoting={() => runQuietly(() => actions.startVoting())}
+            onSubmitVote={(voterId, vote) =>
+              runQuietly(() => actions.submitVote(voterId, vote))
+            }
+            onScore={() => runQuietly(() => actions.scoreRound())}
             isHost={isHost}
           />
         );
@@ -206,7 +220,7 @@ export default function TrickedOrTreatPage() {
             round={currentRound}
             players={game.players}
             isLastRound={isLastRound}
-            onNext={() => actions.nextRound()}
+            onNext={() => runQuietly(() => actions.nextRound())}
             isHost={isHost}
           />
         );
@@ -224,6 +238,11 @@ export default function TrickedOrTreatPage() {
   return (
     <div className="theme-tot">
       {renderPhase()}
+      {error && (
+        <p className="fixed bottom-20 left-1/2 z-40 -translate-x-1/2 rounded-full bg-rose-500/90 px-4 py-2 text-sm text-white shadow-lg">
+          {error}
+        </p>
+      )}
       <ConnectButton />
       <HelpButton content={<FolManualContent />} />
     </div>

@@ -21,11 +21,11 @@ export const POINTS_NAUGHTY_PENALTY = 25;
 export const NAUGHTY_COPY = "Santa has seen you: NAUGHTY!";
 
 /**
- * Seconds players get to lock in their vote each round. Deliberately short:
- * a fast clock leaves no time to paste the statement into a search engine
- * or an LLM and still press a button.
+ * Seconds players get to lock in their vote each round. Kept short on
+ * purpose: no time to paste the statement into a search engine or an LLM
+ * and still press a button — but long enough to not feel punishing.
  */
-export const VOTE_TIME_LIMIT = 7;
+export const VOTE_TIME_LIMIT = 10;
 
 /**
  * How many free warnings a no-show voter gets before penalties kick in,
