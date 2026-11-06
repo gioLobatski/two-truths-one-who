@@ -13,11 +13,13 @@ export function Button({
 }: ButtonProps) {
   const base =
     "rounded-xl px-5 py-3 font-semibold transition cursor-pointer active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40";
+  // Primary/ghost read the themed CSS variables (globals.css): arcade values
+  // by default, festive under .theme-tot — so one Button serves both games.
   const variants: Record<string, string> = {
     primary:
-      "bg-amber-400 text-black shadow-lg shadow-amber-900/30 hover:bg-amber-300",
+      "bg-[var(--ui-primary)] text-[var(--ui-primary-fg)] shadow-lg shadow-[color:var(--ui-primary-shadow)] hover:bg-[var(--ui-primary-hover)]",
     ghost:
-      "bg-cyan-500/10 text-cyan-100 ring-1 ring-inset ring-cyan-400/30 hover:bg-cyan-500/20",
+      "bg-[color:var(--ui-ghost-bg)] text-[var(--ui-ghost-fg)] ring-1 ring-inset ring-[color:var(--ui-ghost-ring)] hover:bg-[color:var(--ui-ghost-hover)]",
     danger: "bg-rose-500/90 text-white hover:bg-rose-400",
   };
   return <button className={`${base} ${variants[variant]} ${className}`} {...props} />;

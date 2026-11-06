@@ -6,6 +6,44 @@
   --foreground: #f5f0e1;
   --border: rgba(255, 255, 255, 0.1);
   --radius: 0.625rem;
+
+  /* Shared-chrome palette. Defaults are the arcade look (amber primary,
+     cyan ghost), so game 1 and the landing render unchanged; a .theme-tot
+     wrapper overrides these to restyle every shared component at once. */
+  --ui-primary: #fbbf24; /* amber-400 */
+  --ui-primary-fg: #000000;
+  --ui-primary-hover: #fcd34d; /* amber-300 */
+  --ui-primary-shadow: rgba(146, 64, 14, 0.3); /* amber-900/30 */
+  --ui-ghost-bg: rgba(8, 145, 178, 0.1); /* cyan-500/10 */
+  --ui-ghost-fg: #cffafe; /* cyan-100 */
+  --ui-ghost-ring: rgba(34, 211, 238, 0.3); /* cyan-400/30 */
+  --ui-ghost-hover: rgba(8, 145, 178, 0.2); /* cyan-500/20 */
+  --ui-label: rgba(165, 243, 252, 0.7); /* cyan-200/70 */
+  --ui-link: #67e8f9; /* cyan-300 */
+  --ui-link-hover: #a5f3fc; /* cyan-200 */
+}
+
+/* Tricked or Treat — Halloween orange + Christmas pine/red on a spooky
+   purple night. Applies to every chrome inside the page wrapper. */
+.theme-tot {
+  --ui-primary: #f97316; /* pumpkin orange */
+  --ui-primary-fg: #1c0a00;
+  --ui-primary-hover: #fb923c;
+  --ui-primary-shadow: rgba(154, 52, 18, 0.45);
+  --ui-ghost-bg: rgba(16, 185, 129, 0.1); /* pine green */
+  --ui-ghost-fg: #d1fae5;
+  --ui-ghost-ring: rgba(52, 211, 153, 0.3);
+  --ui-ghost-hover: rgba(16, 185, 129, 0.2);
+  --ui-label: rgba(110, 231, 183, 0.75); /* emerald-200-ish */
+  --ui-link: #6ee7b7;
+  --ui-link-hover: #a7f3d0;
+
+  min-height: 100dvh;
+  background:
+    radial-gradient(60rem 40rem at 15% -10%, rgba(249, 115, 22, 0.16), transparent 60%),
+    radial-gradient(50rem 35rem at 85% 110%, rgba(16, 185, 129, 0.14), transparent 60%),
+    radial-gradient(35rem 25rem at 90% -5%, rgba(220, 38, 38, 0.1), transparent 55%),
+    linear-gradient(160deg, #170b1f 0%, #0d0510 45%, #0a0a0f 100%);
 }
 
 @theme inline {

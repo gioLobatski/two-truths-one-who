@@ -1,5 +1,6 @@
 "use client";
 
+import type { SyntheticEvent } from "react";
 import Image from "next/image";
 
 // Hollow-head gingerbread sticker. The head is deliberately cut out so the
@@ -17,6 +18,11 @@ const HEAD = { leftPct: 50, topPct: 25, sizePct: 30 } as const;
  * The statement "on trial": the author's gingerbread avatar on the left with
  * their emoji in the hollow head, and their words in a speech bubble to the
  * right. Used by both the voting screen and the round-result reveal.
+ *
+ * Anti-cheat guardrail: the whole block is non-selectable and copy/cut/
+ * context-menu/drag are blocked, so players can't lift the wording and
+ * search it in an LLM. This is a deterrent, not a lock — screenshots and
+ * retyping are always possible; the 7-second clock does the heavy lifting.
  */
 export function GingerbreadStatement({
   text,
@@ -29,8 +35,16 @@ export function GingerbreadStatement({
   avatar: string;
   size?: number;
 }) {
+  const blockDefault = (e: SyntheticEvent) => e.preventDefault();
+
   return (
-    <div className="flex w-full items-center gap-3 sm:gap-5">
+    <div
+      className="flex w-full select-none items-center gap-3 sm:gap-5"
+      onCopy={blockDefault}
+      onCut={blockDefault}
+      onContextMenu={blockDefault}
+      onDragStart={blockDefault}
+    >
       {/* Gingerbread figure with the player's emoji as its hollow head */}
       <div className="relative shrink-0" style={{ width: size, height: size }}>
         <span
@@ -52,6 +66,7 @@ export function GingerbreadStatement({
           alt={`${authorName}'s gingerbread`}
           width={size}
           height={size}
+          draggable={false}
           // Fill the square box on both axes (object-contain preserves the
           // art's ratio) so head percentages below map to the same box.
           style={{ width: "100%", height: "100%" }}

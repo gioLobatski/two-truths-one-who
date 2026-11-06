@@ -48,7 +48,7 @@ export function LobbyScreen({
       <Card className="space-y-6">
         {/* Game code to share */}
         <div className="rounded-xl bg-black/30 px-4 py-3 text-center ring-1 ring-inset ring-white/10">
-          <p className="text-xs uppercase tracking-wide text-cyan-200/70 mb-1">
+          <p className="text-xs uppercase tracking-wide text-[var(--ui-label)] mb-1">
             Game Code
           </p>
           <p className="font-mono text-lg font-bold text-white break-all">
@@ -56,7 +56,7 @@ export function LobbyScreen({
           </p>
           <button
             onClick={copyCode}
-            className="mt-2 cursor-pointer text-sm text-cyan-300 hover:text-cyan-200"
+            className="mt-2 cursor-pointer text-sm text-[var(--ui-link)] hover:text-[var(--ui-link-hover)]"
           >
             {copied ? "✓ Copied!" : "Copy code"}
           </button>
@@ -75,7 +75,7 @@ export function LobbyScreen({
                 className="flex items-center justify-between rounded-xl bg-black/20 px-4 py-3 ring-1 ring-inset ring-white/5"
               >
                 <span className="font-medium text-white">
-                  <span className="mr-2 text-cyan-200/70">{i + 1}.</span>
+                  <span className="mr-2 text-[var(--ui-label)]">{i + 1}.</span>
                   {p.name}
                 </span>
               </li>
@@ -85,7 +85,7 @@ export function LobbyScreen({
 
         {/* Host role notice */}
         {isModerator && (
-          <p className="rounded-xl bg-cyan-500/10 px-4 py-3 text-center text-sm text-cyan-100 ring-1 ring-inset ring-cyan-400/20">
+          <p className="rounded-xl bg-[color:var(--ui-ghost-bg)] px-4 py-3 text-center text-sm text-[var(--ui-ghost-fg)] ring-1 ring-inset ring-[color:var(--ui-ghost-ring)]">
             {moderatorNotice}
           </p>
         )}

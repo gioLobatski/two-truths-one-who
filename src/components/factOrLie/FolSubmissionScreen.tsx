@@ -146,7 +146,7 @@ export function FolSubmissionScreen({
           {isHost ? (
             <>
               <div className="rounded-xl bg-black/30 px-4 py-4 ring-1 ring-inset ring-white/10">
-                <p className="text-xs font-semibold uppercase tracking-wide text-cyan-200/70">
+                <p className="text-xs font-semibold uppercase tracking-wide text-emerald-200/70">
                   Rounds to play
                 </p>
                 <div className="mt-3 flex items-center justify-center gap-4">
@@ -242,7 +242,7 @@ export function FolSubmissionScreen({
 
       <Card className="space-y-5">
         <div className="space-y-2">
-          <label className="text-xs font-semibold uppercase tracking-wide text-cyan-200/70">
+          <label className="text-xs font-semibold uppercase tracking-wide text-emerald-200/70">
             Your costume
           </label>
           <p className="text-xs text-slate-300/60">
@@ -253,7 +253,7 @@ export function FolSubmissionScreen({
 
         {draft.map((entry, i) => (
           <div key={i} className="space-y-2">
-            <label className="text-xs font-semibold uppercase tracking-wide text-cyan-200/70">
+            <label className="text-xs font-semibold uppercase tracking-wide text-emerald-200/70">
               Statement {i + 1}
             </label>
             <textarea
@@ -266,7 +266,7 @@ export function FolSubmissionScreen({
               rows={2}
               maxLength={140}
               placeholder="Something about you — serve it straight or with a twist…"
-              className="w-full resize-none rounded-xl bg-black/40 px-4 py-3 text-white placeholder-white/30 outline-none ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-cyan-400"
+              className="w-full resize-none rounded-xl bg-black/40 px-4 py-3 text-white placeholder-white/30 outline-none ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-emerald-400"
             />
             <DeclaredToggle
               value={entry.declared}

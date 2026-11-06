@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FolPlayer, FolRound, FolVote, scoreVoteRound } from "@/lib/factOrLie";
+import {
+  FolPlayer,
+  FolRound,
+  FolVote,
+  scoreVoteRound,
+  warningThreshold,
+} from "@/lib/factOrLie";
 import { Button, Card, Screen, Subtitle, Title } from "../ui";
 import { GingerbreadStatement } from "./GingerbreadStatement";
 
@@ -58,21 +64,39 @@ export function FolRoundResultScreen({
   isHost: boolean;
 }) {
   const byId = (id: string) => players.find((p) => p.id === id);
-  const lines = scoreVoteRound(round);
+
+  // The service already recorded this round's misses into players.missedVotes,
+  // so undo the current round's step to rebuild the exact counts the scoring
+  // used — that keeps these displayed lines identical to the applied ones.
+  const missedBefore: Record<string, number> = {};
+  for (const p of players) {
+    const missedThisRound = p.id !== round.authorId && round.votes[p.id] === undefined;
+    missedBefore[p.id] = Math.max(0, p.missedVotes - (missedThisRound ? 1 : 0));
+  }
+  const lines = scoreVoteRound(round, {
+    playerCount: players.length,
+    missedVotes: missedBefore,
+  });
+  // Warnings belong on the naughty list; penalties already show in the
+  // points list (they pay the author, not the no-show).
+  const naughtyLines = lines.filter((l) => l.kind === "warning");
 
   const voteEntries = Object.entries(round.votes).filter(
     ([voterId]) => voterId !== round.authorId,
   );
 
-  // Running scoreboard — scores already include this round's points
+  // Running scoreboard — scores already include this round's points.
+  // Zero-point warning lines are notes, not gains, so skip them here.
   const ranked = [...players].sort((a, b) => b.score - a.score);
   const gainedThisRound = new Map<string, number>();
   for (const line of lines) {
+    if (line.points === 0) continue;
     gainedThisRound.set(
       line.playerId,
       (gainedThisRound.get(line.playerId) ?? 0) + line.points,
     );
   }
+  const threshold = warningThreshold(players.length);
 
   return (
     <Screen>
@@ -94,7 +118,7 @@ export function FolRoundResultScreen({
         <DeclaredBadge declared={round.declared} />
 
         <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-cyan-200/70">
+          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-200/70">
             The room called it
           </p>
           {voteEntries.length === 0 ? (
@@ -122,7 +146,7 @@ export function FolRoundResultScreen({
         </div>
 
         <div className="space-y-2 border-t border-white/10 pt-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-cyan-200/70">
+          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-200/70">
             Points this round
           </p>
           {lines.length === 0 ? (
@@ -130,20 +154,47 @@ export function FolRoundResultScreen({
               No points awarded this round.
             </p>
           ) : (
-            lines.map((line, i) => (
-              <div key={i} className="flex items-center justify-between text-sm">
-                <span className="text-white">
-                  <span className="font-semibold">{byId(line.playerId)?.name}</span>{" "}
-                  — {line.reason}
-                </span>
-                <span className="font-bold text-emerald-300">+{line.points}</span>
-              </div>
-            ))
+            lines
+              .filter((line) => line.kind === "points" || line.kind === "penalty")
+              .map((line, i) => (
+                <div key={i} className="flex items-center justify-between text-sm">
+                  <span className="text-white">
+                    <span className="font-semibold">{byId(line.playerId)?.name}</span>{" "}
+                    — {line.reason}
+                  </span>
+                  <span
+                    className={
+                      line.kind === "penalty"
+                        ? "font-bold text-rose-300"
+                        : "font-bold text-emerald-300"
+                    }
+                  >
+                    +{line.points}
+                  </span>
+                </div>
+              ))
           )}
         </div>
 
+        {naughtyLines.length > 0 && (
+          <div className="space-y-2 border-t border-white/10 pt-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-200/70">
+              The naughty list 🎅
+            </p>
+            {naughtyLines.map((line, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between rounded-xl bg-rose-500/10 px-4 py-2 text-sm text-rose-200 ring-1 ring-inset ring-rose-400/20"
+              >
+                <span className="font-semibold">{byId(line.playerId)?.name}</span>
+                <span className="text-xs">{line.reason}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
         <div className="space-y-2 border-t border-white/10 pt-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-cyan-200/70">
+          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-200/70">
             Scoreboard
           </p>
           {ranked.map((p, i) => (
@@ -152,13 +203,21 @@ export function FolRoundResultScreen({
               className="flex items-center justify-between rounded-xl bg-black/20 px-4 py-2 text-sm ring-1 ring-inset ring-white/5"
             >
               <span className="flex items-center gap-3 text-white">
-                <span className="w-5 text-center font-semibold text-cyan-200/70">
+                <span className="w-5 text-center font-semibold text-emerald-200/70">
                   {i + 1}
                 </span>
                 <span aria-hidden>{p.avatar}</span>
                 {p.name}
               </span>
               <span className="flex items-baseline gap-2">
+                {p.missedVotes > 0 && (
+                  <span
+                    className="text-xs font-semibold text-rose-300/80"
+                    title={`Skipped ${p.missedVotes} vote${p.missedVotes === 1 ? "" : "s"} (penalties after ${threshold})`}
+                  >
+                    😈 {p.missedVotes}/{threshold}
+                  </span>
+                )}
                 {gainedThisRound.has(p.id) && (
                   <span className="text-xs font-semibold text-emerald-300">
                     +{gainedThisRound.get(p.id)}

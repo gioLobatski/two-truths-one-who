@@ -37,6 +37,8 @@ export type FolPlayerRow = {
   name: string;
   avatar: string;
   score: number;
+  /** Rounds skipped without voting — the naughty-list counter. */
+  missed_votes: number;
   created_at: string;
 };
 
@@ -201,6 +203,7 @@ export async function fetchFactOrLieState(
         (s): FolStatement => ({ id: s.id, text: s.text, declared: s.declared }),
       ),
     score: p.score,
+    missedVotes: p.missed_votes ?? 0,
   }));
 
   const gameRounds: FolRound[] = (rounds ?? []).map((r) => {
@@ -373,9 +376,17 @@ export async function scoreFactOrLieCurrentRound(gameId: string): Promise<void> 
   const round = state.rounds[state.currentRoundIndex];
   if (!round) return;
 
-  const lines = scoreVoteRound(round);
+  // Naughty-list context: everyone's miss count BEFORE this round
+  const missedVotes: Record<string, number> = {};
+  for (const p of state.players) missedVotes[p.id] = p.missedVotes;
+
+  const lines = scoreVoteRound(round, {
+    playerCount: state.players.length,
+    missedVotes,
+  });
 
   for (const line of lines) {
+    if (line.points === 0) continue; // warnings cost nothing (yet)
     const player = state.players.find((p) => p.id === line.playerId);
     if (!player) continue;
 
@@ -385,6 +396,21 @@ export async function scoreFactOrLieCurrentRound(gameId: string): Promise<void> 
       .eq("id", line.playerId);
 
     if (error) throw new Error(`Failed to update score: ${error.message}`);
+  }
+
+  // Every non-author who let the clock die climbs one step down the
+  // naughty list — the penalty decision itself lives in scoreVoteRound
+  for (const voterId of Object.keys(missedVotes)) {
+    if (voterId === round.authorId) continue;
+    if (round.votes[voterId] !== undefined) continue;
+
+    const { error } = await supabase
+      .from("fact_or_lie_players")
+      .update({ missed_votes: missedVotes[voterId] + 1 })
+      .eq("id", voterId);
+
+    if (error)
+      throw new Error(`Failed to record miss: ${error.message}`);
   }
 
   await setFactOrLiePhase(gameId, "roundResult");

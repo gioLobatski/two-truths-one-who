@@ -14,9 +14,30 @@ export const MIN_PLAYERS = 3;
 export const POINTS_CORRECT_VOTE = 100;
 /** Points the author earns for each player who voted wrong. */
 export const POINTS_PER_FOOLED = 50;
+/** Points the author earns each time a warned-out player skips the vote. */
+export const POINTS_NAUGHTY_PENALTY = 25;
 
-/** Seconds players get to lock in their vote each round. */
-export const VOTE_TIME_LIMIT = 45;
+/** The naughty-list message shown whenever a miss is flagged. */
+export const NAUGHTY_COPY = "Santa has seen you: NAUGHTY!";
+
+/**
+ * Seconds players get to lock in their vote each round. Deliberately short:
+ * a fast clock leaves no time to paste the statement into a search engine
+ * or an LLM and still press a button.
+ */
+export const VOTE_TIME_LIMIT = 7;
+
+/**
+ * How many free warnings a no-show voter gets before penalties kick in,
+ * scaled to room size: small rooms can afford to be forgiving, big rooms
+ * can't let half the crowd coast. Past the threshold, every further miss
+ * pays the presenter POINTS_NAUGHTY_PENALTY for the rest of the game.
+ */
+export function warningThreshold(playerCount: number): number {
+  if (playerCount < 5) return 1;
+  if (playerCount < 10) return 2;
+  return 3;
+}
 
 /**
  * The deck is capped at this fraction of all submitted statements — same
@@ -74,6 +95,8 @@ export type FolPlayer = {
   /** The player's own statements. Fixed length of STATEMENTS_PER_PLAYER once submitted. */
   statements: FolStatement[];
   score: number;
+  /** Rounds this player skipped without voting — drives warnings/penalties. */
+  missedVotes: number;
 };
 
 /** One randomized reveal: a single statement belonging to one (visible) author. */
@@ -223,7 +246,28 @@ export type FolScoreLine = {
   playerId: string;
   reason: string;
   points: number;
+  /** "points" scores the line normally; "warning"/"penalty" come from misses. */
+  kind: "points" | "warning" | "penalty";
 };
+
+/** What the room-size-scaled naughty policy says about one skipped vote. */
+export type NaughtyCall = {
+  /** This miss's number for the player, 1-based (including the current one). */
+  missNumber: number;
+  threshold: number;
+  /** True when the presenter earns POINTS_NAUGHTY_PENALTY from this miss. */
+  penalized: boolean;
+};
+
+/** Classify a player's (upcoming) miss given how many they already had. */
+export function classifyMiss(
+  playerCount: number,
+  priorMisses: number,
+): NaughtyCall {
+  const threshold = warningThreshold(playerCount);
+  const missNumber = priorMisses + 1;
+  return { missNumber, threshold, penalized: missNumber > threshold };
+}
 
 /**
  * Compute the points awarded for a single round given its votes.
@@ -232,8 +276,17 @@ export type FolScoreLine = {
  * earns POINTS_PER_FOOLED for every wrong vote. Unlike game 1 there is no
  * diminishing author multiplier — authors are known, so the snowball
  * concern that motivated it doesn't apply.
+ *
+ * Non-voters are judged by the naughty list: while their warnings last a
+ * zero-point "warning" line is emitted, and once they're used up every
+ * further miss pays the author POINTS_NAUGHTY_PENALTY as a "penalty" line.
+ * `opts` carries each player's miss count BEFORE this round; omitting it
+ * (e.g. tests) skips naughty lines entirely.
  */
-export function scoreVoteRound(round: FolRound): FolScoreLine[] {
+export function scoreVoteRound(
+  round: FolRound,
+  opts?: { playerCount: number; missedVotes: Record<string, number> },
+): FolScoreLine[] {
   const lines: FolScoreLine[] = [];
   let fooled = 0;
 
@@ -244,6 +297,7 @@ export function scoreVoteRound(round: FolRound): FolScoreLine[] {
         playerId: voterId,
         reason: `Called it a ${vote === "fact" ? "Treat" : "Trick"} — correct`,
         points: POINTS_CORRECT_VOTE,
+        kind: "points",
       });
     } else {
       fooled += 1;
@@ -255,7 +309,31 @@ export function scoreVoteRound(round: FolRound): FolScoreLine[] {
       playerId: round.authorId,
       reason: `Fooled ${fooled} ${fooled === 1 ? "trick-or-treater" : "trick-or-treaters"}`,
       points: fooled * POINTS_PER_FOOLED,
+      kind: "points",
     });
+  }
+
+  if (opts) {
+    for (const p of Object.keys(opts.missedVotes)) {
+      if (p === round.authorId) continue; // the presenter never votes
+      if (round.votes[p] !== undefined) continue; // they answered in time
+      const call = classifyMiss(opts.playerCount, opts.missedVotes[p] ?? 0);
+      if (call.penalized) {
+        lines.push({
+          playerId: round.authorId,
+          reason: `${NAUGHTY_COPY} — a no-show hands the presenter a free bonus`,
+          points: POINTS_NAUGHTY_PENALTY,
+          kind: "penalty",
+        });
+      } else {
+        lines.push({
+          playerId: p,
+          reason: `Skipped the vote — ${NAUGHTY_COPY} (warning ${call.missNumber} of ${call.threshold})`,
+          points: 0,
+          kind: "warning",
+        });
+      }
+    }
   }
 
   return lines;

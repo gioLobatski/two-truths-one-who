@@ -2,10 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
+  NAUGHTY_COPY,
+  POINTS_NAUGHTY_PENALTY,
   FolPlayer,
   FolRound,
   FolVote,
   VOTE_TIME_LIMIT,
+  classifyMiss,
   pendingVoters,
 } from "@/lib/factOrLie";
 import { Button, Card, Screen, Subtitle, Title } from "../ui";
@@ -46,8 +49,8 @@ function VoteTimer({ remaining }: { remaining: number | null }) {
     ? "text-rose-300 ring-rose-400/40"
     : low
       ? "text-amber-300 ring-amber-400/40"
-      : "text-cyan-200 ring-cyan-400/30";
-  const bar = expired ? "bg-rose-400" : low ? "bg-amber-400" : "bg-cyan-400";
+      : "text-emerald-200 ring-emerald-400/30";
+  const bar = expired ? "bg-rose-400" : low ? "bg-amber-400" : "bg-emerald-400";
 
   return (
     <div className="mx-auto w-full max-w-xl space-y-1.5">
@@ -56,7 +59,7 @@ function VoteTimer({ remaining }: { remaining: number | null }) {
         role="timer"
         aria-label={expired ? "Time's up" : `${remaining} seconds left to vote`}
       >
-        {expired ? "Time's up!" : `0:${String(remaining).padStart(2, "0")}`}
+        {expired ? "Time's up!" : `${remaining}s`}
       </p>
       <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
         <div
@@ -169,6 +172,13 @@ export function FolVotingScreen({
   const remaining = useCountdown(deadline);
   const expired = remaining !== null && remaining <= 0;
 
+  // GM peek is opt-in: game masters share their screen, so the truth stays
+  // hidden until they deliberately click, and re-hides every new round.
+  const [peeked, setPeeked] = useState(false);
+  useEffect(() => {
+    setPeeked(false);
+  }, [round.id]);
+
   // Once the clock runs out the host can end the wait from whichever view
   // they happen to be on (moderator, author, or already voted).
   const expiredHostReveal = expired && isHost && (
@@ -242,7 +252,7 @@ export function FolVotingScreen({
     );
   }
 
-  // Moderator — runs the round and gets the private peek at the truth
+  // Moderator — runs the round; the truth is one deliberate click away
   if (isModerator) {
     const verdict = treatTone(round.declared);
     return (
@@ -260,11 +270,31 @@ export function FolVotingScreen({
         </Card>
         <VoteTimer remaining={remaining} />
         <Card className="space-y-4 text-center">
-          {/* GM-only peek: never render this for players, playing host or not */}
-          <p className="text-sm text-slate-300/70">
-            The truth (just for you):{" "}
-            <span className={`font-bold ${verdict.cls}`}>{verdict.text}</span>
-          </p>
+          {/* GM-only peek: hidden by default so the room can be screen-shared
+              safely — the host reveals it to themselves, never to viewers */}
+          {peeked ? (
+            <div className="space-y-3">
+              <p className="text-sm text-slate-300/70">
+                The truth (just for you):{" "}
+                <span className={`font-bold ${verdict.cls}`}>{verdict.text}</span>
+              </p>
+              <Button
+                variant="ghost"
+                className="w-full"
+                onClick={() => setPeeked(false)}
+              >
+                Hide it again
+              </Button>
+            </div>
+          ) : (
+            <Button
+              variant="ghost"
+              className="w-full"
+              onClick={() => setPeeked(true)}
+            >
+              👁 Peek at the truth
+            </Button>
+          )}
           <p className="text-sm text-slate-300/60">
             Watching {pending.length} player
             {pending.length !== 1 ? "s" : ""} vote...
@@ -337,6 +367,13 @@ export function FolVotingScreen({
 
   // Current player needs to vote — unless the clock beat them to it
   if (expired) {
+    // This miss is already decided — the scoring step will record it, so
+    // show its consequence now: another warning, or a free bonus for the
+    // presenter if the naughty list ran out.
+    const me = playerId ? players.find((p) => p.id === playerId) : undefined;
+    const call = me
+      ? classifyMiss(players.length, me.missedVotes)
+      : undefined;
     return (
       <Screen>
         <Subtitle>
@@ -352,6 +389,18 @@ export function FolVotingScreen({
         <VoteTimer remaining={remaining} />
         <Card className="space-y-2 text-center">
           <Title>Time&apos;s up ⏱</Title>
+          {call &&
+            (call.penalized ? (
+              <p className="text-sm font-semibold text-rose-300">
+                {NAUGHTY_COPY} — {round.authorName} picks up +{" "}
+                {POINTS_NAUGHTY_PENALTY} for the no-show.
+              </p>
+            ) : (
+              <p className="text-sm text-amber-300">
+                That was warning {call.missNumber} of {call.threshold} — keep
+                skipping and the presenter starts earning free points.
+              </p>
+            ))}
           <p className="text-sm text-slate-300/60">
             Too slow — this round scores without your call.
             {!isHost && " Waiting for the host to reveal..."}

@@ -52,19 +52,19 @@ export function FolHomeScreen({
 
         <Card className="space-y-4">
           <div className="space-y-1">
-            <label className="text-xs font-semibold uppercase tracking-wide text-cyan-200/70">
+            <label className="text-xs font-semibold uppercase tracking-wide text-emerald-200/70">
               Game Code
             </label>
             <input
               value={gameCode}
               onChange={(e) => setGameCode(e.target.value)}
               placeholder="Paste the game code"
-              className="w-full rounded-xl bg-black/40 px-4 py-3 text-white placeholder-white/30 outline-none ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-cyan-400"
+              className="w-full rounded-xl bg-black/40 px-4 py-3 text-white placeholder-white/30 outline-none ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-emerald-400"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold uppercase tracking-wide text-cyan-200/70">
+            <label className="text-xs font-semibold uppercase tracking-wide text-emerald-200/70">
               Your Name
             </label>
             <input
@@ -73,7 +73,7 @@ export function FolHomeScreen({
               onKeyDown={(e) => e.key === "Enter" && handleJoin()}
               placeholder="What should we call you?"
               maxLength={24}
-              className="w-full rounded-xl bg-black/40 px-4 py-3 text-white placeholder-white/30 outline-none ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-cyan-400"
+              className="w-full rounded-xl bg-black/40 px-4 py-3 text-white placeholder-white/30 outline-none ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-emerald-400"
             />
           </div>
 
@@ -87,7 +87,7 @@ export function FolHomeScreen({
 
           <button
             onClick={() => setMode("home")}
-            className="w-full cursor-pointer text-center text-sm text-cyan-200/60 hover:text-cyan-100"
+            className="w-full cursor-pointer text-center text-sm text-emerald-200/60 hover:text-emerald-100"
           >
             ← Back
           </button>
@@ -107,7 +107,7 @@ export function FolHomeScreen({
 
         <Card className="space-y-4">
           <div className="space-y-1">
-            <label className="text-xs font-semibold uppercase tracking-wide text-cyan-200/70">
+            <label className="text-xs font-semibold uppercase tracking-wide text-emerald-200/70">
               Your Role
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -141,7 +141,7 @@ export function FolHomeScreen({
 
           {!moderating && (
             <div className="space-y-1">
-              <label className="text-xs font-semibold uppercase tracking-wide text-cyan-200/70">
+              <label className="text-xs font-semibold uppercase tracking-wide text-emerald-200/70">
                 Your Name
               </label>
               <input
@@ -150,7 +150,7 @@ export function FolHomeScreen({
                 onKeyDown={(e) => e.key === "Enter" && handleCreate()}
                 placeholder="What should we call you?"
                 maxLength={24}
-                className="w-full rounded-xl bg-black/40 px-4 py-3 text-white placeholder-white/30 outline-none ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-cyan-400"
+                className="w-full rounded-xl bg-black/40 px-4 py-3 text-white placeholder-white/30 outline-none ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-emerald-400"
               />
             </div>
           )}
@@ -165,7 +165,7 @@ export function FolHomeScreen({
 
           <button
             onClick={() => setMode("home")}
-            className="w-full cursor-pointer text-center text-sm text-cyan-200/60 hover:text-cyan-100"
+            className="w-full cursor-pointer text-center text-sm text-emerald-200/60 hover:text-emerald-100"
           >
             ← Back
           </button>
@@ -203,7 +203,7 @@ export function FolHomeScreen({
 
       <Link
         href="/"
-        className="text-sm text-cyan-200/60 hover:text-cyan-100"
+        className="text-sm text-emerald-200/60 hover:text-emerald-100"
       >
         ← Other games
       </Link>

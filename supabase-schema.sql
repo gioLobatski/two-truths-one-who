@@ -127,6 +127,7 @@ create table public.fact_or_lie_players (
   name text not null,
   avatar text not null default '🎃',  -- festive emoji shown in the gingerbread head
   score integer not null default 0,
+  missed_votes integer not null default 0,  -- naughty-list counter: rounds skipped without voting
   created_at timestamptz not null default now()
 );
 

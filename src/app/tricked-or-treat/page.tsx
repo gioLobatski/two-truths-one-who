@@ -106,18 +106,20 @@ export default function TrickedOrTreatPage() {
 
   if (showSplash) {
     return (
-      <SplashScreen
-        title={SplashTitle}
-        logo={LOGOS.trickedOrTreat}
-        onComplete={() => setShowSplash(false)}
-      />
+      <div className="theme-tot">
+        <SplashScreen
+          title={SplashTitle}
+          logo={LOGOS.trickedOrTreat}
+          onComplete={() => setShowSplash(false)}
+        />
+      </div>
     );
   }
 
   // Show home screen if no game
   if (!gameId) {
     return (
-      <>
+      <div className="theme-tot">
         <FolHomeScreen
           onCreateGame={handleCreateGame}
           onJoinGame={handleJoinGame}
@@ -130,13 +132,17 @@ export default function TrickedOrTreatPage() {
         )}
         <ConnectButton />
         <HelpButton content={<FolManualContent />} />
-      </>
+      </div>
     );
   }
 
   // Loading state
   if (stateLoading || !state || !gameId) {
-    return <LoadingScreen label="Loading game" logo={LOGOS.trickedOrTreat} />;
+    return (
+      <div className="theme-tot">
+        <LoadingScreen label="Loading game" logo={LOGOS.trickedOrTreat} />
+      </div>
+    );
   }
 
   const game = state;
@@ -157,7 +163,7 @@ export default function TrickedOrTreatPage() {
             onStart={() => actions.startSubmission()}
             onLeave={handleLeave}
             submitLabel="Start — write your statements"
-            moderatorNotice="You're running this room — you'll deal each round without writing statements or voting, and you get a private peek at the truth."
+            moderatorNotice="You're running this room — you'll deal each round without writing statements or voting. The truth stays hidden until you click the peek button, so you can screen-share safely."
           />
         );
 
@@ -216,10 +222,10 @@ export default function TrickedOrTreatPage() {
   }
 
   return (
-    <>
+    <div className="theme-tot">
       {renderPhase()}
       <ConnectButton />
       <HelpButton content={<FolManualContent />} />
-    </>
+    </div>
   );
 }
